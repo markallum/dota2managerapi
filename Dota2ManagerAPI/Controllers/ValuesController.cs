@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Dota2ManagerAPI.DAL;
+using Dota2ManagerAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dota2ManagerAPI.Controllers
@@ -9,11 +11,18 @@ namespace Dota2ManagerAPI.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private DbService _dbService;
+
+        public ValuesController(DbService dbService)
+        {
+            _dbService = dbService;
+        }
+
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public string Get()
         {
-            return new string[] { "value1", "value2" };
+            return "value";
         }
 
         // GET api/values/5
