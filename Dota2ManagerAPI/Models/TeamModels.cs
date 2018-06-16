@@ -5,6 +5,12 @@ using System.Threading.Tasks;
 
 namespace Dota2ManagerAPI.Models
 {
+    public class TeamInfo
+    {
+        public int id { get; set; }
+        public string Name { get; set; }
+    }
+
     public class Team
     {
         public int id { get; set; }
@@ -15,14 +21,15 @@ namespace Dota2ManagerAPI.Models
         {
             Players = new List<Player>();
         }
+
     }
+
 
     public class Player
     {
         public int id { get; set; }
         public string Name { get; set; }
         public int Age { get; set; }
-        public DateTime Birthday { get; set; }
         public int Efficiency { get; set; }
         public int Poise { get; set; }
         public int Speed { get; set; }

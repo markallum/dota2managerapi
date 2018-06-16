@@ -27,7 +27,7 @@ namespace Dota2ManagerAPI
         {
             services.AddMvc();
 
-            services.AddDbContext<DbService>(options => options.UseSqlServer(Configuration.GetConnectionString("d2mdb")));
+            services.AddDbContext<DbService>(options => options.UseSqlServer(Configuration.GetConnectionString("d2mdb")).EnableSensitiveDataLogging());
             services.AddScoped<MatchService, MatchService>();
             services.AddScoped<BaseService, BaseService>();
             services.AddScoped<TestDataService, TestDataService>();

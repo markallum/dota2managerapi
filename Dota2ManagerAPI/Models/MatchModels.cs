@@ -5,15 +5,6 @@ using System.Threading.Tasks;
 
 namespace Dota2ManagerAPI.Models
 {
-    public class Lineup
-    {
-        public List<HeroMatched> Heroes { get; set; }
-
-        public Lineup()
-        {
-            Heroes = new List<HeroMatched>();
-        }
-    }
 
     public class Match
     {
@@ -21,37 +12,33 @@ namespace Dota2ManagerAPI.Models
         public TeamMatched TeamRadiant { get; set; }
         public TeamMatched TeamDire { get; set; }
 
-        public double RadiantBaseHeroInfluence { get; set; }
-        public double DireBaseHeroInfluence { get; set; }
-
-        public double RadiantBaseChance { get; set; }
-        public double DireBaseChance { get; set; }
+        public bool IsRadiantWin { get; set; }
 
         public Match()
         {
             TeamRadiant = new TeamMatched();
             TeamDire = new TeamMatched();
-            RadiantBaseChance = 50;
-            DireBaseChance = 50;
         }
     }
 
     public class Matchup
     {
         public int TargetHeroID { get; set; }
-        public double Disadvantage { get; set; }
+        public double Advantage { get; set; }
     }
 
 
     public class TeamMatched
     {
-        public Team TeamInfo { get; set; }
+        public TeamInfo TeamInfo { get; set; }
         public List<PlayerMatched> Players { get; set; }
+        public double TotalInfluence { get; set; }
         
         public TeamMatched()
         {
-            TeamInfo = new Team();
+             TeamInfo = new TeamInfo();
             Players = new List<PlayerMatched>();
+            TotalInfluence = 0;
         }
         
     }
@@ -61,14 +48,25 @@ namespace Dota2ManagerAPI.Models
         public Player Player { get; set; }
         public HeroMatched Hero { get; set; }
         public double Influence { get; set; }
+
+        public PlayerMatched()
+        {
+            Influence = 0;
+        }
     }
 
     public class HeroMatched
     {
         public Hero HeroInfo { get; set; }
         public List<Matchup> Matchups { get; set; }
-        
-        public int PlayedByPlayerID { get; set; }
+
+        public double InfluenceEfficiencyModifier { get; set; }
+        public double InfluencePoiseModifier { get; set; }
+        public double InfluenceSpeedModifier { get; set; }
+        public double InfluencePositioningModifier { get; set; }
+        public double InfluenceAwarenessModifier { get; set; }
+        public double InfluenceTotalModifier { get; set; }
+        public double InfluenceMatchups { get; set; }
 
         public HeroMatched()
         {

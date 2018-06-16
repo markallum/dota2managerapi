@@ -11,9 +11,10 @@ using System;
 namespace Dota2ManagerAPI.Migrations
 {
     [DbContext(typeof(DbService))]
-    partial class DbServiceModelSnapshot : ModelSnapshot
+    [Migration("20180615123156_AdvantageSwitch")]
+    partial class AdvantageSwitch
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

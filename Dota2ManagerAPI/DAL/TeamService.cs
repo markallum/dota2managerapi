@@ -1,4 +1,5 @@
 ﻿using Dota2ManagerAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,11 @@ namespace Dota2ManagerAPI.DAL
         {
             _dbService = dbService;
         }
-        public Team GetTeam(int TeamID)
+        public async Task<Team> GetTeam(int TeamID)
         {
-            var Team =  _dbService.Teams.Find(TeamID);
-            Team.Players = _dbService.Players.Where(x => x.TeamID == Team.id).ToList();
-            return _dbService.Teams.Find(TeamID);
+            var Team = await _dbService.Teams.FindAsync(TeamID);
+            Team.Players = await _dbService.Players.Where(x => x.TeamID == TeamID).ToListAsync();
+            return Team;
         }
     }
 }

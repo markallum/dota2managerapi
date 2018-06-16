@@ -21,5 +21,7 @@ namespace Dota2ManagerAPI.DAL
         // Players
         public DbSet<Player> Players { get; set; }
 
+        
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Dota2ManagerAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,83 +20,120 @@ namespace Dota2ManagerAPI.DAL
             _teamService = teamService;
         }
 
-        // TESTING
-        public Match runMatch()
+        public async Task<Match> SetupMatch()
         {
             Match Match = new Match();
 
+            // Get test setups
+            Match.TeamRadiant = await _testDataService.CreateRadiantTeam();
+            Match.TeamDire = await _testDataService.CreateDireTeam();
 
-
-            Random rnd = new Random();
-
-            //// Generate random lineups
-            //for (var i = 0; i < 5; i++)
-            //{
-            //    HeroMatched newHero = new HeroMatched();
-            //    newHero.HeroInfo = _baseService.GetHero(rnd.Next(1, 115));
-            //    Match.RadiantLineup.Heroes.Add(newHero);
-            //}
-
-            //for (var i = 0; i < 5; i++)
-            //{
-            //    HeroMatched newHero = new HeroMatched();
-            //    newHero.HeroInfo = _baseService.GetHero(rnd.Next(1, 115));
-            //    Match.DireLineup.Heroes.Add(newHero);
-            //}
-
-
-            Match.TeamRadiant.Lineup = _testDataService.CreateRadiantLineup();
-            Match.TeamDire.Lineup = _testDataService.CreateDireLineup();
-
-            Match.TeamRadiant.TeamInfo = _teamService.GetTeam(1);
-            Match.TeamDire.TeamInfo = _teamService.GetTeam(2);
-
-            double RadiantBaseHeroInfluenceCounter = 0;
-            // Get winrate statistics RADIANT
-            foreach (var bhero in Match.TeamRadiant.Lineup.Heroes)
-            {
-                foreach (var thero in Match.TeamDire.Lineup.Heroes)
-                {
-                    Matchup newMatchup = new Matchup();
-                    newMatchup.TargetHeroID = thero.HeroInfo.HeroID;
-                    newMatchup.Disadvantage = _dbService.WinRatesVersus.Where(x => x.BaseHeroID == bhero.HeroInfo.HeroID && x.TargetHeroID == newMatchup.TargetHeroID).FirstOrDefault().Disadvantage;
-                    bhero.Matchups.Add(newMatchup);
-                    bhero.Influence += newMatchup.Disadvantage;
-                }
-
-                bhero.Matchups.OrderBy(x => x.TargetHeroID);
-                RadiantBaseHeroInfluenceCounter += bhero.Influence;
-            }
-
-            double DireBaseHeroInfluenceCounter = 0;
-            // Get winrate statistics DIRE
-            foreach (var bhero in Match.TeamDire.Lineup.Heroes)
-            {
-                foreach (var thero in Match.TeamRadiant.Lineup.Heroes)
-                {
-                    Matchup newMatchup = new Matchup();
-                    newMatchup.TargetHeroID = thero.HeroInfo.HeroID;
-                    newMatchup.Disadvantage = _dbService.WinRatesVersus.Where(x => x.BaseHeroID == bhero.HeroInfo.HeroID && x.TargetHeroID == newMatchup.TargetHeroID).FirstOrDefault().Disadvantage;
-                    bhero.Matchups.Add(newMatchup);
-                    bhero.Influence += newMatchup.Disadvantage;
-                }
-
-                bhero.Matchups.OrderBy(x => x.TargetHeroID);
-                DireBaseHeroInfluenceCounter += bhero.Influence;
-            }
-
-            Match.RadiantBaseChance -= RadiantBaseHeroInfluenceCounter;
-            Match.DireBaseChance -= DireBaseHeroInfluenceCounter;
-
-            // Calculate winrate
-
-            Match.TeamRadiant.Lineup.Heroes.OrderBy(x => x.HeroInfo.HeroID);
-            Match.TeamDire.Lineup.Heroes.OrderBy(x => x.HeroInfo.HeroID);
+            // Get matchup data
+            //Match.TeamRadiant.Players = await GetMatchups(Match.TeamRadiant.Players, Match.TeamDire.Players);
+            //Match.TeamDire.Players = await GetMatchups(Match.TeamDire.Players, Match.TeamRadiant.Players);
 
 
             return Match;
-        } 
+        }
 
+ 
+
+        // TESTING
+        public Match SimulateMatch(Match Match)
+        {
+            
+
+            // Calculate Influence
+            Match.TeamRadiant = calculateTeamInfluence(Match.TeamRadiant, Match.TeamDire);
+            Match.TeamDire = calculateTeamInfluence(Match.TeamDire, Match.TeamRadiant);
+
+            
+
+            // Order by Hero ID (temporary, will likely be by position)
+            Match.TeamRadiant.Players.OrderBy(x => x.Hero.HeroInfo.HeroID);
+            Match.TeamDire.Players.OrderBy(x => x.Hero.HeroInfo.HeroID);
+
+            // Calculate Winner
+            if (Match.TeamRadiant.TotalInfluence > Match.TeamDire.TotalInfluence)
+            {
+                Match.IsRadiantWin = true;
+            } else
+            {
+                Match.IsRadiantWin = false;
+            }
+
+            return Match;
+        }
+
+        public async Task<List<PlayerMatched>> GetMatchups(List<PlayerMatched> SourcePlayers, List<PlayerMatched> TargetPlayers)
+        {
+            foreach (var SourcePlayer in SourcePlayers)
+            {
+                foreach (var TargetPlayer in TargetPlayers)
+                {
+                    Matchup newMatchup = new Matchup();
+                    newMatchup.TargetHeroID = TargetPlayer.Hero.HeroInfo.HeroID;
+                    // Get disadvantage data
+                    WinRatesVersus WinRateData = await _dbService.WinRatesVersus
+                        .Where(x => x.BaseHeroID == SourcePlayer.Hero.HeroInfo.HeroID && x.TargetHeroID == newMatchup.TargetHeroID)
+                        .FirstOrDefaultAsync();
+
+                    newMatchup.Advantage = WinRateData.Advantage;
+
+                    //newMatchup.Disadvantage = await _dbService.WinRatesVersus
+                    //    .Where(x => x.BaseHeroID == SourcePlayer.Hero.HeroInfo.HeroID && x.TargetHeroID == newMatchup.TargetHeroID)
+                    //    .FirstOrDefaultAsync().Result.Disadvantage;
+                    SourcePlayer.Hero.Matchups.Add(newMatchup);
+                    SourcePlayer.Hero.InfluenceMatchups += newMatchup.Advantage;
+                    //SourcePlayer.Influence += newMatchup.Disadvantage;
+                    SourcePlayer.Hero.InfluenceMatchups = Math.Round(SourcePlayer.Hero.InfluenceMatchups, 4);
+                }
+            }
+
+            return SourcePlayers;
+        }
+
+        public TeamMatched calculateTeamInfluence(TeamMatched SourceTeam, TeamMatched TargetTeam)
+        {
+            // This should be put in a global setting somewhere
+            double BaseModifier = 0.005;
+
+            foreach (var SourcePlayer in SourceTeam.Players)
+            {
+                //foreach (var TargetPlayer in TargetTeam.Players)
+                //{
+                //    Matchup newMatchup = new Matchup();
+                //    newMatchup.TargetHeroID = TargetPlayer.Hero.HeroInfo.HeroID;
+                //    // Get disadvantage data
+                //    newMatchup.Disadvantage = _dbService.WinRatesVersus.Where(x => x.BaseHeroID == SourcePlayer.Hero.HeroInfo.HeroID && x.TargetHeroID == newMatchup.TargetHeroID).FirstOrDefault().Disadvantage;
+                //    SourcePlayer.Hero.Matchups.Add(newMatchup);
+                //    SourcePlayer.Influence += newMatchup.Disadvantage;
+                //}
+
+                // Amplify Influence by skills
+                // Base Modifier * Player Skill * Hero Skill
+                SourcePlayer.Hero.InfluenceEfficiencyModifier = BaseModifier * SourcePlayer.Player.Efficiency * SourcePlayer.Hero.HeroInfo.Efficiency;
+                SourcePlayer.Hero.InfluencePoiseModifier = BaseModifier * SourcePlayer.Player.Poise * SourcePlayer.Hero.HeroInfo.Poise;
+                SourcePlayer.Hero.InfluenceSpeedModifier = BaseModifier * SourcePlayer.Player.Speed * SourcePlayer.Hero.HeroInfo.Speed;
+                SourcePlayer.Hero.InfluencePositioningModifier = BaseModifier * SourcePlayer.Player.Positioning * SourcePlayer.Hero.HeroInfo.Positioning;
+                SourcePlayer.Hero.InfluenceAwarenessModifier = BaseModifier * SourcePlayer.Player.Awareness * SourcePlayer.Hero.HeroInfo.Awareness;
+
+                SourcePlayer.Hero.InfluenceTotalModifier = SourcePlayer.Hero.InfluenceEfficiencyModifier + SourcePlayer.Hero.InfluencePoiseModifier + SourcePlayer.Hero.InfluenceSpeedModifier + SourcePlayer.Hero.InfluencePositioningModifier + SourcePlayer.Hero.InfluenceAwarenessModifier;
+                SourcePlayer.Influence = SourcePlayer.Hero.InfluenceMatchups + ((SourcePlayer.Hero.InfluenceMatchups * SourcePlayer.Hero.InfluenceTotalModifier) / 100);
+
+
+                // Sorts matchups by hero ID, testing only - makes for easier comparison
+                SourcePlayer.Hero.Matchups.OrderBy(x => x.TargetHeroID);
+
+
+                SourceTeam.TotalInfluence += SourcePlayer.Influence;
+            }
+
+
+
+
+            return SourceTeam;
+        }
 
 
 

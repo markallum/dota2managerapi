@@ -9,110 +9,178 @@ namespace Dota2ManagerAPI.DAL
     public class TestDataService
     {
         private BaseService _baseService;
+        private TeamService _teamService;
 
-        public TestDataService(BaseService baseService)
+        public TestDataService(BaseService baseService, TeamService teamService)
         {
             _baseService = baseService;
+            _teamService = teamService;
+        }
+
+        public async Task<TeamMatched> CreateRadiantTeam()
+        {
+            TeamMatched Radiant = new TeamMatched();
+
+            Team TestTeam = await _teamService.GetTeam(1);
+            Radiant.TeamInfo.id = TestTeam.id;
+            Radiant.TeamInfo.Name = TestTeam.Name;
+
+            foreach (var Player in TestTeam.Players)
+            {
+                var newPlayer = new PlayerMatched();
+                newPlayer.Player = Player;
+                Radiant.Players.Add(newPlayer);
+            }
+
+            return Radiant;
+        }
+
+        public async Task<TeamMatched> CreateDireTeam()
+        {
+            TeamMatched Dire = new TeamMatched();
+
+            Team TestTeam = await _teamService.GetTeam(2);
+            Dire.TeamInfo.id = TestTeam.id;
+            Dire.TeamInfo.Name = TestTeam.Name;
+
+            foreach (var Player in TestTeam.Players)
+            {
+                var newPlayer = new PlayerMatched();
+                newPlayer.Player = Player;
+                Dire.Players.Add(newPlayer);
+            }
+
+            return Dire;
+        }
+
+        public async Task<TeamMatched> CreateRadiantTeamMatched()
+        {
+            TeamMatched Radiant = new TeamMatched();
+
+            Team RadiantTeam = await _teamService.GetTeam(1);
+            List<HeroMatched> RadiantLineup = CreateRadiantLineup();
+
+            Radiant.TeamInfo = new TeamInfo()
+            {
+                id = RadiantTeam.id,
+                Name = RadiantTeam.Name
+            };
+
+
+            for (var i = 0; i < 5; i++)
+            {
+                var playerMatched = new PlayerMatched();
+                playerMatched.Player = RadiantTeam.Players[i];
+                playerMatched.Hero = RadiantLineup[i];
+                Radiant.Players.Add(playerMatched);
+            }
+
+            return Radiant;
+            
+        }
+
+        public async Task<TeamMatched> CreateDireTeamMatched()
+        {
+            TeamMatched Dire = new TeamMatched();
+
+            Team DireTeam = await _teamService.GetTeam(2);
+            List<HeroMatched> DireLineup = CreateDireLineup();
+
+            Dire.TeamInfo = new TeamInfo()
+            {
+                id = DireTeam.id,
+                Name = DireTeam.Name
+            };
+
+            for (var i = 0; i < 5; i++)
+            {
+                var playerMatched = new PlayerMatched();
+                playerMatched.Player = DireTeam.Players[i];
+                playerMatched.Hero = DireLineup[i];
+                Dire.Players.Add(playerMatched);
+            }
+
+            return Dire;
+
         }
 
 
 
         // test lineups
-        public Lineup CreateRadiantLineup()
+        public List<HeroMatched> CreateRadiantLineup()
         {
-            Lineup RadiantLineup = new Lineup();
-
-            // Kotl
-            HeroMatched Kotl = new HeroMatched()
+            var RadiantLineup = new List<HeroMatched>();
+            
+            HeroMatched Five = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(42),
-                PlayedByPlayerID = 2
-                
+                HeroInfo = _baseService.GetHero(42), // Kotl
             };
-            RadiantLineup.Heroes.Add(Kotl);
-
-            // Earthshaker
-            HeroMatched Earthshaker = new HeroMatched()
+            RadiantLineup.Add(Five);
+            
+            HeroMatched Four = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(30),
-                PlayedByPlayerID = 3
+                HeroInfo = _baseService.GetHero(30), // Earthshaker
             };
-            RadiantLineup.Heroes.Add(Earthshaker);
+            RadiantLineup.Add(Four);
 
-            // Storm Spirit
-            HeroMatched StormSpirit = new HeroMatched()
+            HeroMatched Three = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(90),
-                PlayedByPlayerID = 4
+                HeroInfo = _baseService.GetHero(86), // Clockwerk
             };
-            RadiantLineup.Heroes.Add(StormSpirit);
+            RadiantLineup.Add(Three);
+            
+            HeroMatched Two = new HeroMatched()
+            {
+                HeroInfo = _baseService.GetHero(87), // Sniper
+            };
+            RadiantLineup.Add(Two);
 
-            // Slark
-            HeroMatched Slark = new HeroMatched()
+            HeroMatched One = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(86),
-                PlayedByPlayerID = 5
+                HeroInfo = _baseService.GetHero(91), // Sven
             };
-            RadiantLineup.Heroes.Add(Slark);
-
-            // Sven
-            HeroMatched Sven = new HeroMatched()
-            {
-                HeroInfo = _baseService.GetHero(91),
-                PlayedByPlayerID = 6
-            };
-            RadiantLineup.Heroes.Add(Sven);
+            RadiantLineup.Add(One);
 
             return RadiantLineup;
-        }
+          }
 
 
 
 
         // test team
-        public Lineup CreateDireLineup()
+        public List<HeroMatched> CreateDireLineup()
         {
-            Lineup DireLinup = new Lineup();
+            var DireLinup = new List<HeroMatched>();
 
-            // Rubick
-            HeroMatched Rubick = new HeroMatched()
+            HeroMatched Five = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(78),
-                PlayedByPlayerID = 6
+                HeroInfo = _baseService.GetHero(78), // Rubick
             };
-            DireLinup.Heroes.Add(Rubick);
+            DireLinup.Add(Five);
 
-            // Tidehunter
-            HeroMatched Tidehunter = new HeroMatched()
+            HeroMatched Four = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(95),
-                PlayedByPlayerID = 8
+                HeroInfo = _baseService.GetHero(29), // Earth Spirit
             };
-            DireLinup.Heroes.Add(Tidehunter);
+            DireLinup.Add(Four);
 
-            // Queen of Pain
-            HeroMatched QueenOfPain = new HeroMatched()
+            HeroMatched Three = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(75),
-                PlayedByPlayerID = 9
+                HeroInfo = _baseService.GetHero(95), // Tidehunter
             };
-            DireLinup.Heroes.Add(QueenOfPain);
+            DireLinup.Add(Three);
 
-            // Juggernaut
-            HeroMatched Juggernaut = new HeroMatched()
+            HeroMatched Two = new HeroMatched()
             {
-                HeroInfo = _baseService.GetHero(41),
-                PlayedByPlayerID = 10
+                HeroInfo = _baseService.GetHero(24), // Death Prophet
             };
-            DireLinup.Heroes.Add(Juggernaut);
+            DireLinup.Add(Two);
 
-            // Sniper
-            HeroMatched Sniper = new HeroMatched()
-            {
-                HeroInfo = _baseService.GetHero(87),
-                PlayedByPlayerID = 11
+            HeroMatched One = new HeroMatched()
+            { 
+                HeroInfo = _baseService.GetHero(41), // Juggernaut
             };
-            DireLinup.Heroes.Add(Sniper);
+            DireLinup.Add(One);
 
             return DireLinup;
         }

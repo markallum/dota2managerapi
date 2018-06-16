@@ -23,7 +23,16 @@ namespace Dota2ManagerAPI.Controllers
         [HttpGet]
         public async Task<Match> Get()
         {
-            return _matchService.runMatch();
+            Match Match = await _matchService.SetupMatch();
+            return Match;
+            // _matchService.SimulateMatch(Match);
+        }
+
+        [HttpPost]
+        public Match Post(Match Match)
+        {
+            Match = _matchService.SimulateMatch(Match);
+            return Match;
         }
     }
 }

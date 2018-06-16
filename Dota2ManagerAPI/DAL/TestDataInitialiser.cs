@@ -36,7 +36,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "John Smith",
                 Age = 20,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 1,
 
@@ -53,7 +52,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Terry Jones",
                 Age = 23,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 1,
 
@@ -69,7 +67,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Tim Berry",
                 Age = 19,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 1,
 
@@ -86,7 +83,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Adam Sim",
                 Age = 21,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 1,
 
@@ -102,7 +98,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Glenn Miles",
                 Age = 24,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 1,
 
@@ -121,7 +116,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Sam Lance",
                 Age = 25,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 2,
 
@@ -137,7 +131,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Eric Elrin",
                 Age = 17,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 2,
 
@@ -153,7 +146,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Lenny Johnson",
                 Age = 25,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 2,
 
@@ -169,7 +161,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Clive Bell",
                 Age = 21,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 2,
 
@@ -185,7 +176,6 @@ namespace Dota2ManagerAPI.DAL
             {
                 Name = "Winston James",
                 Age = 23,
-                Birthday = DateTime.Today,
                 HasTeam = true,
                 TeamID = 2,
 
