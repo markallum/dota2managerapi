@@ -61,7 +61,7 @@ namespace Dota2ManagerAPI.Web.DAL
             Match.TeamDire.Players.OrderBy(x => x.Hero.HeroID);
 
             // Calculate Winner
-            if (Match.TeamRadiant.TotalInfluence > Match.TeamDire.TotalInfluence)
+            if (Match.TeamRadiant.Influence > Match.TeamDire.Influence)
             {
                 Match.IsRadiantWin = true;
             }
@@ -134,7 +134,7 @@ namespace Dota2ManagerAPI.Web.DAL
                 SourcePlayer.Hero.Matchups.OrderBy(x => x.TargetHeroID);
 
 
-                SourceTeam.TotalInfluence += SourcePlayer.Influence;
+                SourceTeam.Influence += SourcePlayer.Influence;
             }
 
 

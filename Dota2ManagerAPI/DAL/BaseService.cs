@@ -1,4 +1,5 @@
-﻿using Dota2ManagerAPI.Web.Models;
+﻿using AutoMapper;
+using Dota2ManagerAPI.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Dota2ManagerAPI.Web.DAL
     public interface IBaseService
     {
         Task<Hero> GetHero(int HeroID);
-        Task<List<Hero>> GetHeroes();
+        Task<List<HeroInDraft>> GetHeroes();
     }
 
     public class BaseService : IBaseService
@@ -28,9 +29,12 @@ namespace Dota2ManagerAPI.Web.DAL
             return await _dbService.Heroes.Where(x => x.HeroID == HeroID).FirstOrDefaultAsync();
         }
 
-        public async Task<List<Hero>> GetHeroes()
+        public async Task<List<HeroInDraft>> GetHeroes()
         {
-            return await _dbService.Heroes.OrderBy(x => x.Name).ToListAsync();
+            var Heroes = await _dbService.Heroes.OrderBy(x => x.Name).ToListAsync();
+            List<HeroInDraft> HeroesDraftVM = new List<HeroInDraft>();
+            Mapper.Map(Heroes, HeroesDraftVM);
+            return HeroesDraftVM;
         }
 
 

@@ -32,6 +32,8 @@ namespace Dota2ManagerAPI.Web.Controllers
 
             return DraftVM;
         }
+
+      
         /*
         [HttpGet]
         public string Get()

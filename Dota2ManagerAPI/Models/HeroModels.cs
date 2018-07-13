@@ -19,6 +19,11 @@ namespace Dota2ManagerAPI.Web.Models
         public int Awareness { get; set; }
     }
 
+    public class HeroInDraft : Hero
+    {
+        public bool isSelected { get; set; }
+    }
+
 
     public class HeroInMatch : Hero
     {

@@ -8,14 +8,14 @@ namespace Dota2ManagerAPI.Web.Models
         public class Draft
         {
 
-            public List<Hero> AvailableHeroes { get; set; }
+            public List<HeroInDraft> AvailableHeroes { get; set; }
 
             public TeamInDraft TeamRadiant { get; set; }
             public TeamInDraft TeamDire { get; set; }
 
             public Draft()
             {
-                AvailableHeroes = new List<Hero>();
+                AvailableHeroes = new List<HeroInDraft>();
                 TeamRadiant = new TeamInDraft();
                 TeamDire = new TeamInDraft();
             }
