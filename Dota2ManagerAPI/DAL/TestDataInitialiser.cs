@@ -1,11 +1,10 @@
-﻿using Dota2ManagerAPI.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Dota2ManagerAPI.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dota2ManagerAPI.DAL
+namespace Dota2ManagerAPI.Web.DAL
 {
     public class TestDataInitialiser
     {
@@ -24,7 +23,7 @@ namespace Dota2ManagerAPI.DAL
                 await _dbService.SaveChangesAsync();
             }
 
-            
+
         }
 
         private List<Player> getTestPlayers()
@@ -190,3 +189,4 @@ namespace Dota2ManagerAPI.DAL
         }
     }
 }
+

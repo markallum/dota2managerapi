@@ -1,81 +1,89 @@
-﻿using Dota2ManagerAPI.Models;
+﻿using Dota2ManagerAPI.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dota2ManagerAPI.DAL
+namespace Dota2ManagerAPI.Web.DAL
 {
-    public class MatchService
+    public interface IMatchService
+    {
+        Task<MatchSim> SetupMatchWithHeroes();
+        Task<MatchSim> SetupMatchWithMatchups();
+        MatchSim SimulateMatch(MatchSim matchSim);
+        //Task<List<PlayerInMatch>> GetMatchups();
+        //TeamInMatch calculateTeamInfluence();
+    }
+
+
+    public class MatchService : IMatchService
     {
         private DbService _dbService;
-        private TestDataService _testDataService;
-        private TeamService _teamService;
+        private ITestDataService _testDataService;
+        private ITeamService _teamService;
 
-        public MatchService(DbService dbService, TestDataService testDataService, TeamService teamService)
+        public MatchService(DbService dbService, ITestDataService testDataService, ITeamService teamService)
         {
             _dbService = dbService;
             _testDataService = testDataService;
             _teamService = teamService;
         }
 
-        public async Task<Match> SetupMatch()
+       
+
+
+        public async Task<MatchSim> SetupMatchWithHeroes()
         {
-            Match Match = new Match();
-
-            // Get test setups
-            Match.TeamRadiant = await _testDataService.CreateRadiantTeam();
-            Match.TeamDire = await _testDataService.CreateDireTeam();
-
-            // Get matchup data
-            //Match.TeamRadiant.Players = await GetMatchups(Match.TeamRadiant.Players, Match.TeamDire.Players);
-            //Match.TeamDire.Players = await GetMatchups(Match.TeamDire.Players, Match.TeamRadiant.Players);
-
-
-            return Match;
+            return new MatchSim();
         }
 
- 
-
-        // TESTING
-        public Match SimulateMatch(Match Match)
+        public async Task<MatchSim> SetupMatchWithMatchups()
         {
-            
+            return new MatchSim();
+        }
+
+
+
+
+        public MatchSim SimulateMatch(MatchSim MatchSim)
+        {
+
 
             // Calculate Influence
-            Match.TeamRadiant = calculateTeamInfluence(Match.TeamRadiant, Match.TeamDire);
-            Match.TeamDire = calculateTeamInfluence(Match.TeamDire, Match.TeamRadiant);
+            MatchSim.TeamRadiant = calculateTeamInfluence(MatchSim.TeamRadiant, MatchSim.TeamDire);
+            MatchSim.TeamDire = calculateTeamInfluence(MatchSim.TeamDire, MatchSim.TeamRadiant);
 
-            
+
 
             // Order by Hero ID (temporary, will likely be by position)
-            Match.TeamRadiant.Players.OrderBy(x => x.Hero.HeroInfo.HeroID);
-            Match.TeamDire.Players.OrderBy(x => x.Hero.HeroInfo.HeroID);
+            MatchSim.TeamRadiant.Players.OrderBy(x => x.Hero.HeroID);
+            MatchSim.TeamDire.Players.OrderBy(x => x.Hero.HeroID);
 
             // Calculate Winner
-            if (Match.TeamRadiant.TotalInfluence > Match.TeamDire.TotalInfluence)
+            if (MatchSim.TeamRadiant.TotalInfluence > MatchSim.TeamDire.TotalInfluence)
             {
-                Match.IsRadiantWin = true;
-            } else
+                MatchSim.IsRadiantWin = true;
+            }
+            else
             {
-                Match.IsRadiantWin = false;
+                MatchSim.IsRadiantWin = false;
             }
 
-            return Match;
+            return MatchSim;
         }
 
-        public async Task<List<PlayerMatched>> GetMatchups(List<PlayerMatched> SourcePlayers, List<PlayerMatched> TargetPlayers)
+        public async Task<List<PlayerInMatch>> GetMatchups(List<PlayerInMatch> SourcePlayers, List<PlayerInMatch> TargetPlayers)
         {
             foreach (var SourcePlayer in SourcePlayers)
             {
                 foreach (var TargetPlayer in TargetPlayers)
                 {
                     Matchup newMatchup = new Matchup();
-                    newMatchup.TargetHeroID = TargetPlayer.Hero.HeroInfo.HeroID;
+                    newMatchup.TargetHeroID = TargetPlayer.Hero.HeroID;
                     // Get disadvantage data
                     WinRatesVersus WinRateData = await _dbService.WinRatesVersus
-                        .Where(x => x.BaseHeroID == SourcePlayer.Hero.HeroInfo.HeroID && x.TargetHeroID == newMatchup.TargetHeroID)
+                        .Where(x => x.BaseHeroID == SourcePlayer.Hero.HeroID && x.TargetHeroID == newMatchup.TargetHeroID)
                         .FirstOrDefaultAsync();
 
                     newMatchup.Advantage = WinRateData.Advantage;
@@ -93,7 +101,7 @@ namespace Dota2ManagerAPI.DAL
             return SourcePlayers;
         }
 
-        public TeamMatched calculateTeamInfluence(TeamMatched SourceTeam, TeamMatched TargetTeam)
+        public TeamInMatch calculateTeamInfluence(TeamInMatch SourceTeam, TeamInMatch TargetTeam)
         {
             // This should be put in a global setting somewhere
             double BaseModifier = 0.005;
@@ -112,11 +120,11 @@ namespace Dota2ManagerAPI.DAL
 
                 // Amplify Influence by skills
                 // Base Modifier * Player Skill * Hero Skill
-                SourcePlayer.Hero.InfluenceEfficiencyModifier = BaseModifier * SourcePlayer.Player.Efficiency * SourcePlayer.Hero.HeroInfo.Efficiency;
-                SourcePlayer.Hero.InfluencePoiseModifier = BaseModifier * SourcePlayer.Player.Poise * SourcePlayer.Hero.HeroInfo.Poise;
-                SourcePlayer.Hero.InfluenceSpeedModifier = BaseModifier * SourcePlayer.Player.Speed * SourcePlayer.Hero.HeroInfo.Speed;
-                SourcePlayer.Hero.InfluencePositioningModifier = BaseModifier * SourcePlayer.Player.Positioning * SourcePlayer.Hero.HeroInfo.Positioning;
-                SourcePlayer.Hero.InfluenceAwarenessModifier = BaseModifier * SourcePlayer.Player.Awareness * SourcePlayer.Hero.HeroInfo.Awareness;
+                SourcePlayer.Hero.InfluenceEfficiencyModifier = BaseModifier * SourcePlayer.Efficiency * SourcePlayer.Hero.Efficiency;
+                SourcePlayer.Hero.InfluencePoiseModifier = BaseModifier * SourcePlayer.Poise * SourcePlayer.Hero.Poise;
+                SourcePlayer.Hero.InfluenceSpeedModifier = BaseModifier * SourcePlayer.Speed * SourcePlayer.Hero.Speed;
+                SourcePlayer.Hero.InfluencePositioningModifier = BaseModifier * SourcePlayer.Positioning * SourcePlayer.Hero.Positioning;
+                SourcePlayer.Hero.InfluenceAwarenessModifier = BaseModifier * SourcePlayer.Awareness * SourcePlayer.Hero.Awareness;
 
                 SourcePlayer.Hero.InfluenceTotalModifier = SourcePlayer.Hero.InfluenceEfficiencyModifier + SourcePlayer.Hero.InfluencePoiseModifier + SourcePlayer.Hero.InfluenceSpeedModifier + SourcePlayer.Hero.InfluencePositioningModifier + SourcePlayer.Hero.InfluenceAwarenessModifier;
                 SourcePlayer.Influence = SourcePlayer.Hero.InfluenceMatchups + ((SourcePlayer.Hero.InfluenceMatchups * SourcePlayer.Hero.InfluenceTotalModifier) / 100);

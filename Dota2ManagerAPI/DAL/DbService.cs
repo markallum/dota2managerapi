@@ -1,17 +1,17 @@
-﻿using Dota2ManagerAPI.Models;
+﻿using Dota2ManagerAPI.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dota2ManagerAPI.DAL
+namespace Dota2ManagerAPI.Web.DAL
 {
     public class DbService : DbContext
     {
         public DbService(DbContextOptions<DbService> options) : base(options) { }
 
-        // Base Tables
+        // Base
         public DbSet<Hero> Heroes { get; set; }
         public DbSet<WinRatesVersus> WinRatesVersus { get; set; }
 
@@ -20,8 +20,5 @@ namespace Dota2ManagerAPI.DAL
 
         // Players
         public DbSet<Player> Players { get; set; }
-
-        
-
     }
 }

@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dota2ManagerAPI.DAL;
-using Dota2ManagerAPI.Models;
+using Dota2ManagerAPI.Web.DAL;
+using Dota2ManagerAPI.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

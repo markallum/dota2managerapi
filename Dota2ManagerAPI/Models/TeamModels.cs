@@ -3,52 +3,47 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Dota2ManagerAPI.Models
+namespace Dota2ManagerAPI.Web.Models
 {
-    public class TeamInfo
+    public class Team
     {
         public int id { get; set; }
         public string Name { get; set; }
     }
 
-    public class Team
+    public class TeamWithPlayers : Team
     {
-        public int id { get; set; }
-        public string Name { get; set; }
         public List<Player> Players { get; set; }
 
-        public Team()
+        public TeamWithPlayers()
         {
             Players = new List<Player>();
+        }
+    }
+
+    public class TeamInDraft : Team
+    {
+        public List<PlayerInDraft> Players { get; set; }
+
+        public TeamInDraft()
+        {
+            Players = new List<PlayerInDraft>();
+        }
+    }
+
+    public class TeamInMatch : Team
+    {
+        public List<PlayerInMatch> Players { get; set; }
+        public double TotalInfluence { get; set; }
+
+        public TeamInMatch()
+        {
+            Players = new List<PlayerInMatch>();
+            TotalInfluence = 0;
         }
 
     }
 
 
-    public class Player
-    {
-        public int id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
-        public int Efficiency { get; set; }
-        public int Poise { get; set; }
-        public int Speed { get; set; }
-        public int Positioning { get; set; }
-        public int Awareness { get; set; }
-        //public List<PlayerTraits> Traits { get; set; }
-        public bool HasTeam { get; set; }
-        public int TeamID { get; set; }
-    }
 
-    public class PlayerSkills
-    {
-        public string Name { get; set; }
-        public int Value { get; set; }
-    }
-
-    public class PlayerTraits
-    {
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
 }

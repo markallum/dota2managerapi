@@ -1,64 +1,103 @@
-﻿using System;
+﻿using AutoMapper;
+using Dota2ManagerAPI.Web.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dota2ManagerAPI.Models;
 
-namespace Dota2ManagerAPI.DAL
+namespace Dota2ManagerAPI.Web.DAL
 {
-    public class TestDataService
+    public interface ITestDataService
     {
-        private BaseService _baseService;
-        private TeamService _teamService;
+        Task<TeamInDraft> CreateTestTeam(int TestTeamID);
+        /*
+        Task<TeamInMatch> CreateRadiantTeam();
+        Task<TeamInMatch> CreateDireTeam();
+        
+        Task<TeamInMatch> CreateRadiantTeamInMatch();
+        Task<TeamInMatch> CreateDireTeamInMatch();
+        List<HeroInMatch> CreateRadiantLineup();
+        List<HeroInMatch> CreateDireLineup();
+        */
 
-        public TestDataService(BaseService baseService, TeamService teamService)
+    }
+    public class TestDataService : ITestDataService
+    {
+        private IBaseService _baseService;
+        private ITeamService _teamService;
+
+        public TestDataService(IBaseService baseService, ITeamService teamService)
         {
             _baseService = baseService;
             _teamService = teamService;
         }
 
-        public async Task<TeamMatched> CreateRadiantTeam()
+        
+
+        public async Task<TeamInDraft> CreateTestTeam(int TestTeamID)
         {
-            TeamMatched Radiant = new TeamMatched();
+            TeamInDraft TestTeamIM = new TeamInDraft();
+
+            TeamWithPlayers TeamWP = await _teamService.GetTeamWithPlayers(TestTeamID);
+            TestTeamIM.id = TeamWP.id;
+            TestTeamIM.Name = TeamWP.Name;
+
+            foreach (var Player in TeamWP.Players)
+            {
+                var newPlayer = new PlayerInDraft();
+                Mapper.Map(Player, newPlayer);
+                TestTeamIM.Players.Add(newPlayer);
+            }
+
+            return TestTeamIM;
+        }
+
+        /*
+        public async Task<TeamInMatch> CreateRadiantTeam()
+        {
+            TeamInMatch Radiant = new TeamInMatch();
 
             Team TestTeam = await _teamService.GetTeam(1);
-            Radiant.TeamInfo.id = TestTeam.id;
-            Radiant.TeamInfo.Name = TestTeam.Name;
+            Radiant.id = TestTeam.id;
+            Radiant.Name = TestTeam.Name;
 
             foreach (var Player in TestTeam.Players)
             {
-                var newPlayer = new PlayerMatched();
-                newPlayer.Player = Player;
+                var newPlayer = new PlayerInMatch();
+                Mapper.Map(Player, newPlayer);
                 Radiant.Players.Add(newPlayer);
             }
 
             return Radiant;
         }
 
-        public async Task<TeamMatched> CreateDireTeam()
+        public async Task<TeamInMatch> CreateDireTeam()
         {
-            TeamMatched Dire = new TeamMatched();
+            TeamInMatch Dire = new TeamInMatch();
 
             Team TestTeam = await _teamService.GetTeam(2);
-            Dire.TeamInfo.id = TestTeam.id;
-            Dire.TeamInfo.Name = TestTeam.Name;
+            Dire.id = TestTeam.id;
+            Dire.Name = TestTeam.Name;
 
             foreach (var Player in TestTeam.Players)
             {
-                var newPlayer = new PlayerMatched();
-                newPlayer.Player = Player;
+                var newPlayer = new PlayerInMatch();
+                Mapper.Map(Player, newPlayer);
                 Dire.Players.Add(newPlayer);
             }
 
             return Dire;
         }
 
-        public async Task<TeamMatched> CreateRadiantTeamMatched()
+        */
+
+        /*
+        public async Task<TeamInMatch> CreateRadiantTeamInMatch()
         {
-            TeamMatched Radiant = new TeamMatched();
+            TeamInMatch Radiant = new TeamInMatch();
 
             Team RadiantTeam = await _teamService.GetTeam(1);
-            List<HeroMatched> RadiantLineup = CreateRadiantLineup();
+            List<HeroInMatch> RadiantLineup = CreateRadiantLineup();
 
             Radiant.TeamInfo = new TeamInfo()
             {
@@ -69,22 +108,22 @@ namespace Dota2ManagerAPI.DAL
 
             for (var i = 0; i < 5; i++)
             {
-                var playerMatched = new PlayerMatched();
-                playerMatched.Player = RadiantTeam.Players[i];
-                playerMatched.Hero = RadiantLineup[i];
-                Radiant.Players.Add(playerMatched);
+                var PlayerInMatch = new PlayerInMatch();
+                PlayerInMatch.Player = RadiantTeam.Players[i];
+                PlayerInMatch.Hero = RadiantLineup[i];
+                Radiant.Players.Add(PlayerInMatch);
             }
 
             return Radiant;
-            
+
         }
 
-        public async Task<TeamMatched> CreateDireTeamMatched()
+        public async Task<TeamInMatch> CreateDireTeamInMatch()
         {
-            TeamMatched Dire = new TeamMatched();
+            TeamInMatch Dire = new TeamInMatch();
 
             Team DireTeam = await _teamService.GetTeam(2);
-            List<HeroMatched> DireLineup = CreateDireLineup();
+            List<HeroInMatch> DireLineup = CreateDireLineup();
 
             Dire.TeamInfo = new TeamInfo()
             {
@@ -94,96 +133,92 @@ namespace Dota2ManagerAPI.DAL
 
             for (var i = 0; i < 5; i++)
             {
-                var playerMatched = new PlayerMatched();
-                playerMatched.Player = DireTeam.Players[i];
-                playerMatched.Hero = DireLineup[i];
-                Dire.Players.Add(playerMatched);
+                var PlayerInMatch = new PlayerInMatch();
+                PlayerInMatch.Player = DireTeam.Players[i];
+                PlayerInMatch.Hero = DireLineup[i];
+                Dire.Players.Add(PlayerInMatch);
             }
 
             return Dire;
 
         }
 
-
-
         // test lineups
-        public List<HeroMatched> CreateRadiantLineup()
+        public List<HeroInMatch> CreateRadiantLineup()
         {
-            var RadiantLineup = new List<HeroMatched>();
-            
-            HeroMatched Five = new HeroMatched()
+            var RadiantLineup = new List<HeroInMatch>();
+
+            HeroInMatch Five = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(42), // Kotl
             };
             RadiantLineup.Add(Five);
-            
-            HeroMatched Four = new HeroMatched()
+
+            HeroInMatch Four = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(30), // Earthshaker
             };
             RadiantLineup.Add(Four);
 
-            HeroMatched Three = new HeroMatched()
+            HeroInMatch Three = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(86), // Clockwerk
             };
             RadiantLineup.Add(Three);
-            
-            HeroMatched Two = new HeroMatched()
+
+            HeroInMatch Two = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(87), // Sniper
             };
             RadiantLineup.Add(Two);
 
-            HeroMatched One = new HeroMatched()
+            HeroInMatch One = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(91), // Sven
             };
             RadiantLineup.Add(One);
 
             return RadiantLineup;
-          }
-
-
-
+        }
 
         // test team
-        public List<HeroMatched> CreateDireLineup()
+        public List<HeroInMatch> CreateDireLineup()
         {
-            var DireLinup = new List<HeroMatched>();
+            var DireLinup = new List<HeroInMatch>();
 
-            HeroMatched Five = new HeroMatched()
+            HeroInMatch Five = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(78), // Rubick
             };
             DireLinup.Add(Five);
 
-            HeroMatched Four = new HeroMatched()
+            HeroInMatch Four = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(29), // Earth Spirit
             };
             DireLinup.Add(Four);
 
-            HeroMatched Three = new HeroMatched()
+            HeroInMatch Three = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(95), // Tidehunter
             };
             DireLinup.Add(Three);
 
-            HeroMatched Two = new HeroMatched()
+            HeroInMatch Two = new HeroInMatch()
             {
                 HeroInfo = _baseService.GetHero(24), // Death Prophet
             };
             DireLinup.Add(Two);
 
-            HeroMatched One = new HeroMatched()
-            { 
+            HeroInMatch One = new HeroInMatch()
+            {
                 HeroInfo = _baseService.GetHero(41), // Juggernaut
             };
             DireLinup.Add(One);
 
             return DireLinup;
         }
-
+        */
     }
+
 }

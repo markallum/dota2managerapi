@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Dota2ManagerAPI.DAL;
+using AutoMapper;
+using Dota2ManagerAPI.Web.DAL;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -28,20 +29,21 @@ namespace Dota2ManagerAPI
             services.AddMvc();
 
             services.AddDbContext<DbService>(options => options.UseSqlServer(Configuration.GetConnectionString("d2mdb")).EnableSensitiveDataLogging());
-            services.AddScoped<MatchService, MatchService>();
-            services.AddScoped<BaseService, BaseService>();
-            services.AddScoped<TestDataService, TestDataService>();
-            services.AddScoped<TeamService, TeamService>();
+            services.AddScoped<ITeamService, TeamService>();
+            services.AddScoped<IMatchService, MatchService>();
+            services.AddScoped<IDraftService, DraftService>();
 
-            services.AddTransient<TestDataInitialiser>();
+            services.AddScoped<ITestDataService, TestDataService>();
+            services.AddScoped<IBaseService, BaseService>();
+
+            services.AddAutoMapper();
 
             services.AddCors();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app,
-                              IHostingEnvironment env,
-                              TestDataInitialiser seeder)
+                              IHostingEnvironment env)
         {
             if (env.IsDevelopment())
             {
