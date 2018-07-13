@@ -11,7 +11,7 @@ namespace Dota2ManagerAPI.Web.Models
         public int HeroID { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }
-        public bool isMelee { get; set; }
+        public bool IsMelee { get; set; }
         public int Efficiency { get; set; }
         public int Poise { get; set; }
         public int Speed { get; set; }
@@ -21,7 +21,8 @@ namespace Dota2ManagerAPI.Web.Models
 
     public class HeroInDraft : Hero
     {
-        public bool isSelected { get; set; }
+        public bool IsSelected { get; set; }
+        public int SelectedById { get; set; }
     }
 
 

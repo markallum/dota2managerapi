@@ -33,6 +33,11 @@ namespace Dota2ManagerAPI.Web.Controllers
             return DraftVM;
         }
 
+        [HttpPost]
+        public async Task<Match> Post([FromBody]Draft DraftVM)
+        {
+            return await _matchService.SimulateMatch(DraftVM);
+        }
       
         /*
         [HttpGet]

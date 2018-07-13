@@ -18,6 +18,7 @@ namespace Dota2ManagerAPI.Web.Models
         //public List<PlayerTraits> Traits { get; set; }
         public bool HasTeam { get; set; }
         public int TeamID { get; set; }
+        public int Position { get; set; }
     }
 
     public class PlayerInDraft : Player

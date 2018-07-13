@@ -1,4 +1,5 @@
-﻿using Dota2ManagerAPI.Web.Models;
+﻿using AutoMapper;
+using Dota2ManagerAPI.Web.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,9 +10,7 @@ namespace Dota2ManagerAPI.Web.DAL
 {
     public interface IMatchService
     {
-        Task<Match> SetupMatchWithHeroes();
-        Task<Match> SetupMatchWithMatchups();
-        Match SimulateMatch(Match Match);
+        Task<Match> SimulateMatch(Draft DraftVM);
         //Task<List<PlayerInMatch>> GetMatchups();
         //TeamInMatch calculateTeamInfluence();
     }
@@ -33,44 +32,38 @@ namespace Dota2ManagerAPI.Web.DAL
        
 
 
-        public async Task<Match> SetupMatchWithHeroes()
+
+
+        public async Task<Match> SimulateMatch(Draft DraftVM)
         {
-            return new Match();
-        }
+            Match MatchVM = new Match();
+            Mapper.Map(DraftVM, MatchVM);
 
-        public async Task<Match> SetupMatchWithMatchups()
-        {
-            return new Match();
-        }
-
-
-
-
-        public Match SimulateMatch(Match Match)
-        {
-
+            // Get matchups
+            MatchVM.TeamRadiant.Players = await GetMatchups(MatchVM.TeamRadiant.Players, MatchVM.TeamDire.Players);
+            MatchVM.TeamDire.Players = await GetMatchups(MatchVM.TeamDire.Players, MatchVM.TeamRadiant.Players);
 
             // Calculate Influence
-            Match.TeamRadiant = calculateTeamInfluence(Match.TeamRadiant, Match.TeamDire);
-            Match.TeamDire = calculateTeamInfluence(Match.TeamDire, Match.TeamRadiant);
+            MatchVM.TeamRadiant = calculateTeamInfluence(MatchVM.TeamRadiant, MatchVM.TeamDire);
+            MatchVM.TeamDire = calculateTeamInfluence(MatchVM.TeamDire, MatchVM.TeamRadiant);
 
 
 
             // Order by Hero ID (temporary, will likely be by position)
-            Match.TeamRadiant.Players.OrderBy(x => x.Hero.HeroID);
-            Match.TeamDire.Players.OrderBy(x => x.Hero.HeroID);
+            MatchVM.TeamRadiant.Players.OrderBy(x => x.Hero.HeroID);
+            MatchVM.TeamDire.Players.OrderBy(x => x.Hero.HeroID);
 
             // Calculate Winner
-            if (Match.TeamRadiant.Influence > Match.TeamDire.Influence)
+            if (MatchVM.TeamRadiant.Influence > MatchVM.TeamDire.Influence)
             {
-                Match.IsRadiantWin = true;
+                MatchVM.IsRadiantWin = true;
             }
             else
             {
-                Match.IsRadiantWin = false;
+                MatchVM.IsRadiantWin = false;
             }
 
-            return Match;
+            return MatchVM;
         }
 
         public async Task<List<PlayerInMatch>> GetMatchups(List<PlayerInMatch> SourcePlayers, List<PlayerInMatch> TargetPlayers)
