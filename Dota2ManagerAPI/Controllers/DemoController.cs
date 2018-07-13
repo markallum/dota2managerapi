@@ -25,12 +25,12 @@ namespace Dota2ManagerAPI.Web.Controllers
         }
         
         [HttpGet]
-        public async Task<DraftSim> Get()
+        public async Task<Draft> Get()
         {
-            var DraftSimVM = await _draftService.SetupDraft();
-            DraftSimVM.AvailableHeroes = await _baseService.GetHeroes();
+            var DraftVM = await _draftService.SetupDraft();
+            DraftVM.AvailableHeroes = await _baseService.GetHeroes();
 
-            return DraftSimVM;
+            return DraftVM;
         }
         /*
         [HttpGet]

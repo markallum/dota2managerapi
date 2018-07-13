@@ -13,7 +13,9 @@ namespace Dota2ManagerAPI.Web.DAL
         {
             CreateMap<Team, TeamInMatch>();
             CreateMap<Team, TeamWithPlayers>();
+            CreateMap<Team, TeamInDraft>();
             CreateMap<Player, PlayerInMatch>();
+            CreateMap<Player, PlayerInDraft>();
             CreateMap<Hero, HeroInMatch>();
         }
     }

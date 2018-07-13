@@ -8,7 +8,7 @@ namespace Dota2ManagerAPI.Web.DAL
 {
     public interface IDraftService
     {
-        Task<DraftSim> SetupDraft();
+        Task<Draft> SetupDraft();
         
     }
 
@@ -26,21 +26,21 @@ namespace Dota2ManagerAPI.Web.DAL
         }
 
 
-        public async Task<DraftSim> SetupDraft()
+        public async Task<Draft> SetupDraft()
         {
-            DraftSim DraftSimVM = new DraftSim();
+            Draft DraftVM = new Draft();
 
 
             // Get test setups
-            DraftSimVM.TeamRadiant = await _testDataService.CreateTestTeam(1);
-            DraftSimVM.TeamDire = await _testDataService.CreateTestTeam(2);
+            DraftVM.TeamRadiant = await _testDataService.CreateTestTeam(1);
+            DraftVM.TeamDire = await _testDataService.CreateTestTeam(2);
 
             // Get matchup data
             //Match.TeamRadiant.Players = await GetMatchups(Match.TeamRadiant.Players, Match.TeamDire.Players);
             //Match.TeamDire.Players = await GetMatchups(Match.TeamDire.Players, Match.TeamRadiant.Players);
 
 
-            return DraftSimVM;
+            return DraftVM;
         }
     }
 }

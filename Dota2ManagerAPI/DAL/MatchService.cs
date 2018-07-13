@@ -9,9 +9,9 @@ namespace Dota2ManagerAPI.Web.DAL
 {
     public interface IMatchService
     {
-        Task<MatchSim> SetupMatchWithHeroes();
-        Task<MatchSim> SetupMatchWithMatchups();
-        MatchSim SimulateMatch(MatchSim matchSim);
+        Task<Match> SetupMatchWithHeroes();
+        Task<Match> SetupMatchWithMatchups();
+        Match SimulateMatch(Match Match);
         //Task<List<PlayerInMatch>> GetMatchups();
         //TeamInMatch calculateTeamInfluence();
     }
@@ -33,44 +33,44 @@ namespace Dota2ManagerAPI.Web.DAL
        
 
 
-        public async Task<MatchSim> SetupMatchWithHeroes()
+        public async Task<Match> SetupMatchWithHeroes()
         {
-            return new MatchSim();
+            return new Match();
         }
 
-        public async Task<MatchSim> SetupMatchWithMatchups()
+        public async Task<Match> SetupMatchWithMatchups()
         {
-            return new MatchSim();
+            return new Match();
         }
 
 
 
 
-        public MatchSim SimulateMatch(MatchSim MatchSim)
+        public Match SimulateMatch(Match Match)
         {
 
 
             // Calculate Influence
-            MatchSim.TeamRadiant = calculateTeamInfluence(MatchSim.TeamRadiant, MatchSim.TeamDire);
-            MatchSim.TeamDire = calculateTeamInfluence(MatchSim.TeamDire, MatchSim.TeamRadiant);
+            Match.TeamRadiant = calculateTeamInfluence(Match.TeamRadiant, Match.TeamDire);
+            Match.TeamDire = calculateTeamInfluence(Match.TeamDire, Match.TeamRadiant);
 
 
 
             // Order by Hero ID (temporary, will likely be by position)
-            MatchSim.TeamRadiant.Players.OrderBy(x => x.Hero.HeroID);
-            MatchSim.TeamDire.Players.OrderBy(x => x.Hero.HeroID);
+            Match.TeamRadiant.Players.OrderBy(x => x.Hero.HeroID);
+            Match.TeamDire.Players.OrderBy(x => x.Hero.HeroID);
 
             // Calculate Winner
-            if (MatchSim.TeamRadiant.TotalInfluence > MatchSim.TeamDire.TotalInfluence)
+            if (Match.TeamRadiant.TotalInfluence > Match.TeamDire.TotalInfluence)
             {
-                MatchSim.IsRadiantWin = true;
+                Match.IsRadiantWin = true;
             }
             else
             {
-                MatchSim.IsRadiantWin = false;
+                Match.IsRadiantWin = false;
             }
 
-            return MatchSim;
+            return Match;
         }
 
         public async Task<List<PlayerInMatch>> GetMatchups(List<PlayerInMatch> SourcePlayers, List<PlayerInMatch> TargetPlayers)

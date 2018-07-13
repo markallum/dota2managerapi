@@ -34,12 +34,12 @@ namespace Dota2ManagerAPI.Web.Models
     public class TeamInMatch : Team
     {
         public List<PlayerInMatch> Players { get; set; }
-        public double TotalInfluence { get; set; }
+        public double Influence { get; set; }
 
         public TeamInMatch()
         {
             Players = new List<PlayerInMatch>();
-            TotalInfluence = 0;
+            Influence = 0;
         }
 
     }
